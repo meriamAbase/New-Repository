@@ -6,7 +6,12 @@ import os
 from datetime import datetime, date
 
 DATETIME_STRING_FORMAT = "%Y-%m-%d"
-
+# Creating functions for text styling methods
+GREEN_START = '\033[32;1m'
+GREEN_BANNER_START = '\033[42;30;1m'
+RED_START = '\033[31;1m'
+BOLD_TEXT = '\033[1m'
+COLOUR_END = '\033[0m'
 
 # Create tasks.txt if it doesn't exist
 if not os.path.exists("tasks.txt"):
@@ -70,17 +75,17 @@ def login():
     logged_in = False
     while not logged_in:
 
-        print("\033[42;30;1m===================== LOGIN =====================\033[0m")
-        global curr_user
-        curr_user = input("\033[32;1mUsername: \033[0m")
-        if curr_user not in username_password.keys():
-            print("\033[31;1mUser does not exist\033[0m")
-        elif curr_user in username_password.keys():
-            curr_pass = input("\033[32;1mPassword: \033[0m")
-            if username_password[curr_user] != curr_pass:
-                print("\033[31;1mWrong password\033[0m")
+        print(f"{GREEN_BANNER_START}===================== LOGIN ====================={COLOUR_END}")
+        global current_user
+        current_user = input(f"{GREEN_START}Username: {COLOUR_END}")
+        if current_user not in username_password.keys():
+            print(f"{RED_START}User does not exist{COLOUR_END}")
+        elif current_user in username_password.keys():
+            curr_pass = input(f"{GREEN_START}Password: {COLOUR_END}")
+            if username_password[current_user] != curr_pass:
+                print(f"{RED_START}Wrong password{COLOUR_END}")
             else:
-                print("\n\033[42;30;1mLogin Successful!\033[0m")
+                print(f"\n{GREEN_BANNER_START}Login Successful!{COLOUR_END}")
                 logged_in = True       
     return display_menu()
 
@@ -95,36 +100,36 @@ def reg_user():
     Returns:
         'display_menu()' function.
     """
-    print("\033[42;30;1m===================== REGISTER =====================\033[0m")
-    global curr_user
+    print(f"{GREEN_BANNER_START}===================== REGISTER ====================={COLOUR_END}")
+    global current_user
     new_user = False
     while not new_user:
-        new_username = input("\033[32;1mNew Username: \033[0m")
+        new_username = input(f"{GREEN_START}New Username: {COLOUR_END}")
         
         if new_username in username_password.keys():
-            print("\033[31;1mThis username already exists! Please try again.\033[0m")
+            print(f"{RED_START}This username already exists! Please try again.{COLOUR_END}")
             return reg_user()
 
-        confirm_username = input("\033[32;1mConfirm Username: \033[0m")
+        confirm_username = input(f"{GREEN_START}Confirm Username: {COLOUR_END}")
         if new_username != confirm_username:
-            print("\033[31;1mUsernames do not match! Please try again.\033[0m")
+            print(f"{RED_START}Usernames do not match! Please try again.{COLOUR_END}")
             return reg_user()
         else: 
             new_pass = False
             while not new_pass:
-                new_password = input("\033[32;1mNew Password: \033[0m")
+                new_password = input(f"{GREEN_START}New Password: {COLOUR_END}")
 
-                confirm_password = input("\033[32;1mConfirm Password: \033[0m")
+                confirm_password = input(f"{GREEN_START}Confirm Password: {COLOUR_END}")
 
                 if new_password != confirm_password:
-                    print("\033[31;1mPasswords do no match.\033[0m")
+                    print(f"{RED_START}Passwords do no match.{COLOUR_END}")
                     
                 else:
-                    print("\n\033[42;30;1mNew user added!\033[0m")
+                    print(f"\n{GREEN_BANNER_START}New user added!{COLOUR_END}")
                     new_pass = True
         new_user = True
-        curr_user = new_username
-    username_password[curr_user] = new_password
+        current_user = new_username
+    username_password[current_user] = new_password
                 
     with open("user.txt", 'w') as out_file:
         user_data = []
@@ -143,21 +148,21 @@ def add_task():
     Returns:
         'display_menu()' function.
     """
-    task_username = input("\033[32;1mName of person assigned to task: \033[0m")
+    task_username = input(f"{GREEN_START}Name of person assigned to task: {COLOUR_END}")
     if task_username not in username_password.keys():
-        print("\033[31;1mUser does not exist. Please enter a valid username.\033[0m")
+        print(f"{RED_START}User does not exist. Please enter a valid username.{COLOUR_END}")
         return add_task()
-    task_title = input("\033[32;1mTitle of Task: \033[0m")
-    task_description = input("\033[32;1mDescription of Task: \033[0m")
+    task_title = input(f"{GREEN_START}Title of Task: {COLOUR_END}")
+    task_description = input(f"{GREEN_START}Description of Task: {COLOUR_END}")
     while True:
         try:
-            task_due_date = input("\033[32;1mDue date of task (YYYY-MM-DD): \033[0m")
+            task_due_date = input(f"{GREEN_START}Due date of task (YYYY-MM-DD): {COLOUR_END}")
             due_date_time = datetime.strptime(task_due_date, 
             DATETIME_STRING_FORMAT)
             break
 
         except ValueError:
-            print("\033[31;1mInvalid datetime format. Please use the format specified.\033[0m")
+            print(f"{RED_START}Invalid datetime format. Please use the format specified.{COLOUR_END}")
 
 
     # Then get the current date.
@@ -187,7 +192,7 @@ def add_task():
             ]
             task_list_to_write.append(";".join(str_attrs))
         task_file.write("\n".join(task_list_to_write))
-    print("\033[42;30;1mTask successfully added!\033[0m")
+    print(f"{GREEN_BANNER_START}Task successfully added!{COLOUR_END}")
     return display_menu()
 
 
@@ -199,12 +204,12 @@ def view_all():
         'display_menu()' function.
     """
     for pos, t in enumerate(task_list, 1):
-        disp_str = "\n\n\033[42;30;1mKey\tTitle\t\tDetails\033[0m\n"
-        disp_str += f" \033[42;30;1m{pos}\033[0m\t\033[32;1mTask: \033[0m\t\t{t['title']}\n"
-        disp_str += f"\t\033[32;1mAssigned to: \033[0m\t{t['username']}\n"
-        disp_str += f"\t\033[32;1mDate Assigned: \033[0m\t{t['assigned_date'].strftime(DATETIME_STRING_FORMAT)}\n"
-        disp_str += f"\t\033[32;1mDue Date: \033[0m\t{t['due_date'].strftime(DATETIME_STRING_FORMAT)}\n"
-        disp_str += f"\t\033[32;1mTask Description: \033[0m\n\t {t['description']}\n"
+        disp_str = f"\n\n{GREEN_BANNER_START}Key\tTitle\t\tDetails{COLOUR_END}\n"
+        disp_str += f" {GREEN_BANNER_START}{pos}{COLOUR_END}\t{GREEN_START}Task: {COLOUR_END}\t\t{t['title']}\n"
+        disp_str += f"\t{GREEN_START}Assigned to: {COLOUR_END}\t{t['username']}\n"
+        disp_str += f"\t{GREEN_START}Date Assigned: {COLOUR_END}\t{t['assigned_date'].strftime(DATETIME_STRING_FORMAT)}\n"
+        disp_str += f"\t{GREEN_START}Due Date: {COLOUR_END}\t{t['due_date'].strftime(DATETIME_STRING_FORMAT)}\n"
+        disp_str += f"\t{GREEN_START}Task Description: {COLOUR_END}\n\t {t['description']}\n"
         print(disp_str)
     return display_menu()
 
@@ -250,21 +255,21 @@ def complete_task(chosen_task: str, task: int) -> str:
         'task_details(chosen_task, task)' function.
     """
     while True:
-        complete = input(f"\033[32;1mWould you like to mark Task {task} as complete? (Yes/No)\033[0m").capitalize()
+        complete = input(f"{GREEN_START}Would you like to mark Task {task} as complete? (Yes/No){COLOUR_END}").capitalize()
         if complete == 'Yes':
             if chosen_task ['completed']:
-                print("\n\033[1mThis task has already been marked as complete.\033[0m")
+                print(f"\n{BOLD_TEXT}This task has already been marked as complete.{COLOUR_END}")
                 return display_menu()
             else:
                 chosen_task['completed'] = True
                 updating_task_txt(task_list)
-                print("\n\033[42;30;1mThis task is now complete! Congratulations! :)\033[0m")
+                print(f"\n{GREEN_BANNER_START}This task is now complete! Congratulations! :){COLOUR_END}")
                 return display_menu()
         elif complete == 'No':
-            print(f"\n\033[1mNo changes have been made.\033[0m\n\033[32;1mReturning to Task {task} details...\033[0m\n")
+            print(f"\n{BOLD_TEXT}No changes have been made.{COLOUR_END}\n{GREEN_START}Returning to Task {task} details...{COLOUR_END}\n")
             return task_details(chosen_task, task)
         else:    
-            print("\033[31;1mOopsie, that didn't quite work. Please enter either 'Yes' or 'No'.\033[0m")  
+            print(f"{RED_START}Oopsie, that didn't quite work. Please enter either 'Yes' or 'No'.{COLOUR_END}")  
 
 
 def edit_task(chosen_task: str, task: int) -> str:
@@ -281,39 +286,39 @@ def edit_task(chosen_task: str, task: int) -> str:
         'display_menu()' function.
     """
     if chosen_task['completed']:
-        print("\n\033[31;1mThis task is marked as complete and cannot be edited.\033[0m\n\033[32;1mReturning you to the main menu now\n...\n\033[0m")
+        print(f"\n{RED_START}This task is marked as complete and cannot be edited.{COLOUR_END}\n{GREEN_START}Returning you to the main menu now\n...\n{COLOUR_END}")
         return display_menu()
     else:
         edit = False
         while not edit:
-            editing_menu = input(f'''\n\033[32;1mWhat would you like to edit?\033[0m
-            \033[32;1mu\033[0m - Username assigned to task {task}
-            \033[32;1md\033[0m - Due date for task {task}
-            \033[32;1mm\033[0m - Return to the main menu
-            \033[32;1m->\033[0m ''').lower()
+            editing_menu = input(f'''\n{GREEN_START}What would you like to edit?{COLOUR_END}
+            {GREEN_START}u{COLOUR_END} - Username assigned to task {task}
+            {GREEN_START}d{COLOUR_END} - Due date for task {task}
+            {GREEN_START}m{COLOUR_END} - Return to the main menu
+            {GREEN_START}->{COLOUR_END} ''').lower()
             if editing_menu == 'u':
-                username = input("\033[32;1mPlease enter the username you wish to assign this task to\n-> \033[0m")
+                username = input(f"{GREEN_START}Please enter the username you wish to assign this task to\n-> {COLOUR_END}")
                 if username not in username_password.keys():
-                    print("\033[31;1mOopsie, this username does not exist. Please try again.\033[0m")
+                    print(f"{RED_START}Oopsie, this username does not exist. Please try again.{COLOUR_END}")
                 else:
                     chosen_task['username'] = username
                     updating_task_txt(task_list)
-                    print("\033[42;30;1mUsername has been changed successfully!\033[0m")
+                    print(f"{GREEN_BANNER_START}Username has been changed successfully!{COLOUR_END}")
                     edit = True
             elif editing_menu == 'd':
                 try:
-                    due_date = input("\033[32;1mPlease enter the new due date in the following format: YYYY-MM-DD\n-> \033[0m")
+                    due_date = input(f"{GREEN_START}Please enter the new due date in the following format: YYYY-MM-DD\n-> {COLOUR_END}")
                     new_date = datetime.strptime(due_date, DATETIME_STRING_FORMAT)
                     chosen_task['due_date'] = new_date
                     updating_task_txt(task_list)
-                    print("\033[42;30;1mThe due date has been changed successfully!\033[0m")
+                    print(f"{GREEN_BANNER_START}The due date has been changed successfully!{COLOUR_END}")
                     edit = True
                 except ValueError:
-                    print("\033[31;1mOopsie, that date format doesn't seem right, please try again.\033[0m")
+                    print(f"{RED_START}Oopsie, that date format doesn't seem right, please try again.{COLOUR_END}")
             elif editing_menu == 'm':
                 return display_menu()
             else:
-                print("\n\033[31;1mInvalid option, please try again.\033[0m")
+                print(f"\n{RED_START}Invalid option, please try again.{COLOUR_END}")
     return display_menu()
 
 
@@ -332,21 +337,21 @@ def task_details(chosen_task: str, task: int) -> str:
         function.
         If task_menu == 3: returns 'display_menu()' function.
     """
-    disp_str = f"\n\033[42;30;1m=============== Task {task} Details ===============\033[0m\n\n"
-    disp_str += f" \t\033[32;1mTask:\033[0m \t\t {chosen_task['title']}\n"
-    disp_str += f"\t\033[32;1mAssigned to:\033[0m \t {chosen_task['username']}\n"
-    disp_str += f"\t\033[32;1mDate Assigned:\033[0m \t {chosen_task['assigned_date'].strftime(DATETIME_STRING_FORMAT)}\n"
-    disp_str += f"\t\033[32;1mDue Date:\033[0m \t {chosen_task['due_date'].strftime(DATETIME_STRING_FORMAT)}\n"
-    disp_str += f"\t\033[32;1mTask Description:\033[0m \n\t {chosen_task['description']}\n"
+    disp_str = f"\n{GREEN_BANNER_START}=============== Task {task} Details ==============={COLOUR_END}\n\n"
+    disp_str += f" \t{GREEN_START}Task:{COLOUR_END} \t\t {chosen_task['title']}\n"
+    disp_str += f"\t{GREEN_START}Assigned to:{COLOUR_END} \t {chosen_task['username']}\n"
+    disp_str += f"\t{GREEN_START}Date Assigned:{COLOUR_END} \t {chosen_task['assigned_date'].strftime(DATETIME_STRING_FORMAT)}\n"
+    disp_str += f"\t{GREEN_START}Due Date:{COLOUR_END} \t {chosen_task['due_date'].strftime(DATETIME_STRING_FORMAT)}\n"
+    disp_str += f"\t{GREEN_START}Task Description:{COLOUR_END} \n\t {chosen_task['description']}\n"
     print(disp_str)
         
     while True:
         try:
-            task_menu = int(input(f'''\n\n\033[32;1mPlease choose from the following options:\033[0m
-        \033[32;1m1\033[0m - Mark Task {task} as complete
-        \033[32;1m2\033[0m - Edit Task {task}
-        \033[32;1m3\033[0m - Return to the Main Menu
-        \033[32;1m-> \033[0m'''))
+            task_menu = int(input(f'''\n\n{GREEN_START}Please choose from the following options:{COLOUR_END}
+        {GREEN_START}1{COLOUR_END} - Mark Task {task} as complete
+        {GREEN_START}2{COLOUR_END} - Edit Task {task}
+        {GREEN_START}3{COLOUR_END} - Return to the Main Menu
+        {GREEN_START}-> {COLOUR_END}'''))
             if task_menu == 1:
                 return complete_task(chosen_task, task)
             elif task_menu == 2:
@@ -354,9 +359,9 @@ def task_details(chosen_task: str, task: int) -> str:
             elif task_menu == 3:
                 return display_menu()
             else:
-                print("\033[31;1mInvalid selection, please try again.\033[0m")   
+                print(f"{RED_START}Invalid selection, please try again.{COLOUR_END}")   
         except ValueError:
-            print("\033[31;1mOopsie, that was not a number, please try again.\033[0m") 
+            print(f"{RED_START}Oopsie, that was not a number, please try again.{COLOUR_END}") 
 
 
 def selecting_a_task():
@@ -375,16 +380,16 @@ def selecting_a_task():
     while not selection: 
         try:
             for t in task_list:
-                task = int(input("\033[32;1mPlease select the task number you would like to view or alternatively, enter '-1' to return to the main menu:\n-> \033[0m"))
-                if 1 <= task <= len(task_list) and task_list[task - 1]['username'] == curr_user:
+                task = int(input(f"{GREEN_START}Please select the task number you would like to view or alternatively, enter '-1' to return to the main menu:\n-> {COLOUR_END}"))
+                if 1 <= task <= len(task_list) and task_list[task - 1]['username'] == current_user:
                     chosen_task = task_list[task - 1]
                     return task_details(chosen_task, task)
                 elif task == - 1:
                     return display_menu()
                 else:
-                    print("\033[31;1mInvalid selection, please try again.\033[0m")
+                    print(f"{RED_START}Invalid selection, please try again.{COLOUR_END}")
         except ValueError:
-            print("\033[31;1mOopsie, that was not a number, please try again.\033[0m")
+            print(f"{RED_START}Oopsie, that was not a number, please try again.{COLOUR_END}")
 
 
 def view_mine():
@@ -398,17 +403,17 @@ def view_mine():
     """
     user_task_count = 0
     for pos, t in enumerate(task_list, 1):
-        if t['username'] == curr_user:
+        if t['username'] == current_user:
             user_task_count +=1
-            disp_str = f"\n\n\033[32;1mTask {pos}:\033[0m \t {t['title']}\n"
-            disp_str += f"\033[32;1mAssigned to:\033[0m \t {t['username']}\n"
-            disp_str += f"\033[32;1mDate Assigned:\033[0m \t {t['assigned_date'].strftime(DATETIME_STRING_FORMAT)}\n"
-            disp_str += f"\033[32;1mDue Date:\033[0m \t {t['due_date'].strftime(DATETIME_STRING_FORMAT)}\n"
-            disp_str += f"\033[32;1mTask Description:\033[0m \n {t['description']}\n" 
+            disp_str = f"\n\n{GREEN_START}Task {pos}:{COLOUR_END} \t {t['title']}\n"
+            disp_str += f"{GREEN_START}Assigned to:{COLOUR_END} \t {t['username']}\n"
+            disp_str += f"{GREEN_START}Date Assigned:{COLOUR_END} \t {t['assigned_date'].strftime(DATETIME_STRING_FORMAT)}\n"
+            disp_str += f"{GREEN_START}Due Date:{COLOUR_END} \t {t['due_date'].strftime(DATETIME_STRING_FORMAT)}\n"
+            disp_str += f"{GREEN_START}Task Description:{COLOUR_END} \n {t['description']}\n" 
             print(disp_str)
         
     if user_task_count == 0:
-        print("\n\033[1mNo tasks created.\nRedirecting you back to the main menu now\n...\033[0m")
+        print(f"\n{BOLD_TEXT}No tasks created.\nRedirecting you back to the main menu now\n...{COLOUR_END}")
         return display_menu()
     else:
         return selecting_a_task()
@@ -517,7 +522,7 @@ def generate_reports():
             user_details += (f"Percentage of Overdue Tasks: {overdue_percent}\n")      
             overview_file.write(user_details)
 
-    print("\033[42;30;1mReports have been generated!\033[0m")
+    print(f"{GREEN_BANNER_START}Reports have been generated!{COLOUR_END}")
     return display_menu()
 
 
@@ -530,7 +535,7 @@ def display_statistics():
     Returns:
         'display_menu()' function
     """
-    if curr_user == 'admin':
+    if current_user == 'admin':
         if (os.path.exists("./task_overview.txt") == False) or (os.path.exists("./user_overview.txt") == False):
             generate_reports()
 
@@ -542,7 +547,7 @@ def display_statistics():
             for line in file:
                 print(line, end = '')
     else:
-        print("\n\033[31;1mOopsie, as a non-admin member, you don't have access to the statistics.\n\nPlease allow us to redirect you.\n...\033[0m")
+        print(f"\n{RED_START}Oopsie, as a non-admin member, you don't have access to the statistics.\n\nPlease allow us to redirect you.\n...{COLOUR_END}")
     return display_menu()
 
 
@@ -558,15 +563,15 @@ def display_menu():
         'display_statistics()' function.
     """
     while True:
-        print(f"\n\033[32;1mHello {curr_user}!\033[0m\n")  
-        menu = input('''\033[32;1mHow can we help you today:\033[0m
-        \033[32;1ma\033[0m - Adding a task
-        \033[32;1mva\033[0m - View all task(s)
-        \033[32;1mvm\033[0m - View my task(s)
-        \033[32;1mgr\033[0m - generate reports
-        \033[32;1mds\033[0m - Display statistics (for admins only)
-        \033[32;1me\033[0m - Exit
-        \033[32;1m-> \033[0m''').lower()
+        print(f"\n{GREEN_START}Hello {current_user}!{COLOUR_END}\n")  
+        menu = input(f'''{GREEN_START}How can we help you today:{COLOUR_END}
+        {GREEN_START}a{COLOUR_END} - Adding a task
+        {GREEN_START}va{COLOUR_END} - View all task(s)
+        {GREEN_START}vm{COLOUR_END} - View my task(s)
+        {GREEN_START}gr{COLOUR_END} - generate reports
+        {GREEN_START}ds{COLOUR_END} - Display statistics (for admins only)
+        {GREEN_START}e{COLOUR_END} - Exit
+        {GREEN_START}-> {COLOUR_END}''').lower()
                 
         if menu == 'a':
             return add_task()
@@ -584,11 +589,11 @@ def display_menu():
             return display_statistics() 
 
         elif menu == 'e':
-            print("\033[42;30;1m==========Thank you for using our services. See you again soon!==========\033[0m")
+            print(f"{GREEN_BANNER_START}==========Thank you for using our services. See you again soon!=========={COLOUR_END}")
             exit()
 
         else:
-            print("\033[31;1mYou have made a wrong choice, Please Try again.\033[0m")    
+            print(f"{RED_START}You have made a wrong choice, Please Try again.{COLOUR_END}")    
 
 
 # All of the above functions can be placed in another file. Then we
@@ -602,14 +607,14 @@ def main():
     a user, or exit.
     """
     print()
-    print("\033[42;30;1m===================== Hello, Welcome to Task Manager! =====================\033[0m\n\n")
+    print(f"{GREEN_BANNER_START}===================== Hello, Welcome to Task Manager! ====================={COLOUR_END}\n\n")
         
     while True:
-        start = input('''\033[32;1mPlease choose from the following options:\033[0m
-        \033[32;1ml\033[0m - Log in
-        \033[32;1mr\033[0m - Registering a user
-        \033[32;1me\033[0m - Exit
-        \033[32;1m-> \033[0m''').lower()
+        start = input(f'''{GREEN_START}Please choose from the following options:{COLOUR_END}
+        {GREEN_START}l{COLOUR_END} - Log in
+        {GREEN_START}r{COLOUR_END} - Registering a user
+        {GREEN_START}e{COLOUR_END} - Exit
+        {GREEN_START}-> {COLOUR_END}''').lower()
             
         if start == 'l':
             login()
@@ -618,7 +623,7 @@ def main():
             reg_user()
         
         elif start == 'e':
-            print("\033[42;30;1m==========Thank you for using our services. See you again soon!==========\033[0m")
+            print(f"{GREEN_BANNER_START}==========Thank you for using our services. See you again soon!=========={COLOUR_END}")
             exit()
         else:
             print("Invalid option, Please Try again")           
